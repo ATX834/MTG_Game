@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello CardController!{% endblock %}
+
+{% block body %}
+{% for card in cards %}
+    <img src='{{ card.image_uris.normal}}'/>
+{% endfor %}
+{% endblock %}
