@@ -42,11 +42,13 @@ class GameController extends AbstractController
 
         $fighter1
             ->setPersonnage($player1)
+            ->setType('Player')
             ->setPlayer('Player 1')
             ->setPower($player1->getPower())
             ->setToughness($player1->getToughness())
             ->setSpeed($player1->getSpeed())
             ->setHealthPoint($player1->getHealthPoint())
+            ->setMaxHealthPoint($player1->getHealthPoint())
             ->setManaBase(0);
 
         foreach($spellsP1 as $spell){
@@ -58,11 +60,13 @@ class GameController extends AbstractController
 
         $fighter2
             ->setPersonnage($player2)
+            ->setType('Player')
             ->setPlayer('Player 2')
             ->setPower($player2->getPower())
             ->setToughness($player2->getToughness())
             ->setSpeed($player2->getSpeed())
             ->setHealthPoint($player2->getHealthPoint())
+            ->setMaxHealthPoint($player2->getHealthPoint())
             ->setManaBase(0);
 
         foreach($spellsP2 as $spell){
@@ -71,9 +75,10 @@ class GameController extends AbstractController
         foreach($colorsP2 as $color){
             $fighter2->addColor($color);
         }
-        dd($fighter1, $fighter2);
+        $em->persist($fighter1);
+        $em->persist($fighter2);
         $em->flush();
 
-        return redirectToRoute('fight_index');
+        return $this->redirectToRoute('fight_index');
     }
 }

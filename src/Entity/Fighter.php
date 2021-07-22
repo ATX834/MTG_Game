@@ -65,6 +65,16 @@ class Fighter
      */
     private $player;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $type;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $maxHealthPoint;
+
     public function __construct()
     {
         $this->spells = new ArrayCollection();
@@ -204,6 +214,30 @@ class Fighter
     public function setPlayer(string $player): self
     {
         $this->player = $player;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getMaxHealthPoint(): ?int
+    {
+        return $this->maxHealthPoint;
+    }
+
+    public function setMaxHealthPoint(int $maxHealthPoint): self
+    {
+        $this->maxHealthPoint = $maxHealthPoint;
 
         return $this;
     }

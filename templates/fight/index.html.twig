@@ -1,20 +1,98 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello FightController!{% endblock %}
+{% block title %}Let's FIGHT!{% endblock %}
+
+{% set navbar = false %}
 
 {% block body %}
 <style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+* {
+    margin: 0;
+}
+
+html, body {
+    height: 100%;
+    background-image : url('/image/backgrounds/landscape.gif');
+    background-size : cover;
+}
+
+.wrapper {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    .margin: 0 auto -4em;
+}
+
+.footer, .push {
+    height: 4em;
+}
+.vl {
+  border-left: 2px solid grey;
+  height: 20rem;
+}
+
+.m-topNbottom {
+    margin-left: 12rem!important;
+}
+.m-middle {
+    margin-left: 6.8rem!important;
+}
+.progress-bar-correct{
+    height:16px;width:11rem;
+}
 </style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/home/clement/Desktop/MTG_Game/src/Controller/FightController.php'|file_link(0) }}">src/Controller/FightController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/home/clement/Desktop/MTG_Game/templates/fight/index.html.twig'|file_link(0) }}">templates/fight/index.html.twig</a></code></li>
+<nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+    <ul class="navbar-nav">
+        <div class="card bg-light mx-4" style="width: 12rem;">
+            <img class="card-img-top" src="{{player2.personnage.image}}" style='border-style: solid;object-fit: cover; height:12rem' alt="Card image cap">
+            <progress class="nes-progress is-error my-3 mx-auto progress-bar-correct" value="{{player2.healthPoint}}" max="{{player2.maxHealthPoint}}"></progress>
+            <p class='text-center my-3'> {{player2.healthPoint}} / {{player2.maxHealthPoint}}</p>
+            <progress class="nes-progress is-success progress-bar-correct" value="{{player2.manaBase}}" max="5"></progress>
+            <p class='text-center my-3'> {{player2.manaBase}} / 5</p>
+            <p class='text-center'>{{player2.personnage.name}}</p>
+        </div>
     </ul>
+</nav>
+<div class="wrapper">
+
+    <div class="nes-container is-dark with-title text-wrap" style='width:60rem; min-height: 630px;max-height: 630px;'>
+        <p class="title">Container.is-dark</p>
+        <p>Good morning. Thou hast had a good night's sleep, I hope.</p>
+        <p>Good morning. Thou hast had a good night's sleep, I hope.</p>
+        <p>Good morning. Thou hast had a good night's sleep, I hope.</p>
+        <p>Good morning. Thou hast had a good night's sleep, I hope.</p>
+    </div>
+    <div class="push"></div>
+
 </div>
+<div class="footer">
+        <div class='row'>
+            <div class="col-2 card bg-light mx-4" style="width: 12rem;">
+                <img class="card-img-top" src="{{player1.personnage.image}}" style='border-style: solid;object-fit: cover; height:12rem' alt="Card image cap">
+                <progress class="nes-progress is-error my-3 mx-auto progress-bar-correct" value="{{player1.healthPoint}}" max="{{player1.maxHealthPoint}}"></progress>
+                <p class='text-center my-3'> {{player1.healthPoint}} / {{player1.maxHealthPoint}}</p>
+                <progress class="nes-progress is-success progress-bar-correct" value="{{player1.manaBase}}" max="5"></progress>
+                <p class='text-center my-3'> {{player1.manaBase}} / 5</p>
+                <p class='text-center'>{{player1.personnage.name}}</p>
+            </div>
+            <div class="col-2">
+                <div class="vl">
+                    <p class='text-center text-light'>Spells</p>
+                    <div class='mx-auto'>
+                        <a class='nes-btn is-primary text-dark m-topNbottom my-2' href="{{ path('fight_choosing_attack', {'isItSpell': 0, 'attack': -1}) }}">Attack</a><br>
+                        {% for spell in player1.personnage.spells %}
+                            {% if loop.first %}
+                                <a class='nes-btn is-success text-dark text-wrap m-middle my-2' title='{{spell.name}}' href="{{ path('fight_choosing_attack', {'isItSpell': 1, 'attack': spell.id }) }}">Spell 1</a>
+                            {% else %}
+                                <a class='nes-btn is-warning text-wrap mx-2 my-2' title='{{spell.name}}' href="{{ path('fight_choosing_attack', {'isItSpell': 1, 'attack': spell.id }) }}">Spell 2</a><br>
+                            {% endif %}
+                        {% endfor %}
+                        <a class='nes-btn is-error text-dark m-topNbottom my-2' href="{{ path('fight_choosing_attack', {'isItSpell': 0, 'attack': -2}) }}">Ultimate</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

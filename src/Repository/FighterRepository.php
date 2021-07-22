@@ -19,32 +19,14 @@ class FighterRepository extends ServiceEntityRepository
         parent::__construct($registry, Fighter::class);
     }
 
-    // /**
-    //  * @return Fighter[] Returns an array of Fighter objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function destroy($fighter)
     {
-        return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('f.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        return $this->getEntityManager()
+        ->createQuery('
+                DELETE FROM App\Entity\Fighter f
+                WHERE f.id = :id
+        ')
+        ->setParameter('id', $fighter->getId())
+        ->getResult();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Fighter
-    {
-        return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

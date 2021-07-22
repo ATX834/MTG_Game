@@ -1,46 +1,103 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello GameController!{% endblock %}
+{% block title %}Choose your fighter !{% endblock %}
+
+{% set navbar = false %}
 
 {% block body %}
+<style>
+body
+{
+    background-image : url('/image/backgrounds/landscape.gif');
+    background-size : cover;
+}
+.blink_me {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {  
+  50% { opacity: 0; }
+}
+</style>
+<div class='row'>
+    <div class='card bg-danger mx-auto text-center w-25 my-4' style='height: 90px'>
+        <span class="blink_me text-dark my-auto h1">Choose your fighter !</span>
+    </div>
+</div>
+<div class='row my-5 mx-5'>
     {% for character in characters %}
-        <button type="button" class="characterSelect btn" value="{{character.id}}" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            <img src='{{character.image}}'/>
-        </button>
-        {% for spell in character.spells %}
-            <li>
-                <img src='{{spell.image}}' height=75/>
-                {{spell.name}}
-            </li>
-        {% endfor %}
-        {% for color in character.colors %}
-            <li>
-                {{color.name}}
-            </li>
-        {% endfor %}
+        <div class="card bg-transparent mx-4" style="width: 18rem;">
+            <img class="card-img-top" src="{{character.image}}" style='background-size : cover; height:12rem' alt="Card image cap">
+
+            <button type="button" class="nes-btn is-success characterSelect mx-auto my-2" style='width: 10rem' value="{{character.id}}" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                {{character.name}}
+            </button>
+            <button type="button" class="nes-btn is-success mx-auto my-2" style='width: 10rem'value="{{character.name}}" data-bs-toggle="modal" data-bs-target="#infoModal{{character.id}}">
+                Infos
+            </button>
+        </div>
+        
+        <div class="modal fade" id="infoModal{{character.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{character.name}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                {% for color in character.colors %}
+                    {{color.name}} {{"\n"}}
+                {% endfor %}
+                </p>
+                <p>Power : {{character.power}}</p>
+                <p>Toughness : {{character.toughness}}</p>
+                <p>Speed : {{character.speed}}</p>
+                <p>HP : {{character.healthPoint}}</p>
+                <hr>
+
+                <h5 class='text-center'>Spells</h3>
+                {% for spell in character.spells %}
+                    <p>
+                        <img class='my-4' src='{{spell.image}}' width=100/>
+                        {{spell.name}}
+                    </p>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="mx-auto nes-btn is-error" data-bs-dismiss="modal">Close</button>
+            </div>
+            </div>
+        </div>
+        </div>
         
     {% endfor %}
 
-<a class='d-none btn btn-primary' id='startGame' href='#'>START GAME</a>
-
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Choose your character</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        Do you want to select this character ?
-      </div>
-      <div class="modal-footer">
-        <button type="button" id="isChose" data-bs-dismiss="modal" class="btn btn-primary">Choose character</button>
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-      </div>
+    <div class='row'>
+        <p class='h3 text-white'>Player 1 : <span id='player1-chosen'></span></p>
+        <p class='h3 text-white'>Player 2 : <span id='player2-chosen'></span></p>
+        <a class='d-none nes-btn is-primary w-25 mx-auto' id='startGame' href='#'>START GAME</a>
     </div>
-  </div>
-</div>
 
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Choose your character</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Do you want to select this character ?
+        </div>
+        <div class="modal-footer">
+            <button type="button" id="isChosen" data-bs-dismiss="modal" class="nes-btn is-primary">Choose character</button>
+            <button type="button" class="mx-3 nes-btn is-error" data-bs-dismiss="modal">Cancel</button>
+        </div>
+        </div>
+    </div>
+    </div>
+
+</div>
 
 <script>
 var isPlayer1Ready = false;
@@ -51,17 +108,23 @@ let player2Character;
 
 for(let selectCharacter of document.querySelectorAll('.characterSelect')){
     selectCharacter.addEventListener('click', function() {
-        document.querySelector('#isChose').addEventListener('click', function() {
+        document.querySelector('#isChosen').addEventListener('click', function() {
             if(isPlayer1Ready === false)
             {
                 player1Character = selectCharacter.value;
                 selectCharacter.disabled = true;
-                isPlayer1Ready = true;
+                isPlayer1Ready = true;             
+                selectCharacter.classList.remove('is-success');
+                selectCharacter.classList.add('is-disabled');
+                document.querySelector('#player1-chosen').innerHTML = selectCharacter.innerHTML;
             }
             else {
                 player2Character = selectCharacter.value;
                 isPlayer2Ready = true;
                 selectCharacter.disabled = true;
+                selectCharacter.classList.remove('is-success');
+                selectCharacter.classList.add('is-disabled');
+                document.querySelector('#player2-chosen').innerHTML = selectCharacter.innerHTML;
             }
 
             if(isPlayer1Ready === true && isPlayer2Ready === true)

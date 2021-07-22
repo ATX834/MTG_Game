@@ -21,7 +21,7 @@ class CharacterFixtures extends Fixture implements DependentFixtureInterface
             ->addSpell($this->getReference('Chandra Embercat'))
             ->addColor($this->getReference('RED'))
             ->setToughness(2)
-            ->setHealthPoint(13)
+            ->setHealthPoint(17)
             ->setSpeed(7);
 
         $gideon = new Character();
@@ -34,7 +34,7 @@ class CharacterFixtures extends Fixture implements DependentFixtureInterface
             ->addColor($this->getReference('WHITE'))
             ->setPower(6)
             ->setToughness(5)
-            ->setHealthPoint(15)
+            ->setHealthPoint(25)
             ->setSpeed(2);
         
 
