@@ -7,7 +7,7 @@ use Symfony\Component\HttpClient\HttpClient;
 class ApiService
 {
 
-    public function getDataAsArray(string $url)
+    public function getDataAsArray(string $url): array
     {
         $client = HttpClient::create();
 

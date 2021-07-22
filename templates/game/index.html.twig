@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello GameController!{% endblock %}
+
+{% block body %}
+    {% for character in characters %}
+        <button type="button" class="characterSelect btn" value="{{character.id}}" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <img src='{{character.image}}'/>
+        </button>
+        {% for spell in character.spells %}
+            <li>
+                <img src='{{spell.image}}' height=75/>
+                {{spell.name}}
+            </li>
+        {% endfor %}
+        {% for color in character.colors %}
+            <li>
+                {{color.name}}
+            </li>
+        {% endfor %}
+        
+    {% endfor %}
+
+<a class='d-none btn btn-primary' id='startGame' href='#'>START GAME</a>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Choose your character</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Do you want to select this character ?
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="isChose" data-bs-dismiss="modal" class="btn btn-primary">Choose character</button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+var isPlayer1Ready = false;
+var isPlayer2Ready = false;
+
+let player1Character;
+let player2Character;
+
+for(let selectCharacter of document.querySelectorAll('.characterSelect')){
+    selectCharacter.addEventListener('click', function() {
+        document.querySelector('#isChose').addEventListener('click', function() {
+            if(isPlayer1Ready === false)
+            {
+                player1Character = selectCharacter.value;
+                selectCharacter.disabled = true;
+                isPlayer1Ready = true;
+            }
+            else {
+                player2Character = selectCharacter.value;
+                isPlayer2Ready = true;
+                selectCharacter.disabled = true;
+            }
+
+            if(isPlayer1Ready === true && isPlayer2Ready === true)
+            {
+                let startGame = document.querySelector('#startGame')
+                startGame.classList.remove('d-none')
+                startGame.href =  '/game/select/' + player1Character + '/' + player2Character;
+            }
+        })
+    })
+}
+</script>
+
+{% endblock %}

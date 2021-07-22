@@ -3,7 +3,9 @@
 {% block title %}Hello CardController!{% endblock %}
 
 {% block body %}
-{% for card in cards %}
-    <img src='{{ card.image_uris.normal}}'/>
-{% endfor %}
+    {% for _set in sets %}
+        <li>
+            <a href='{{ path('card_show_set', {'set': _set.code}) }}'/>{{_set.name}}</a>
+        </li>
+    {% endfor %}
 {% endblock %}
