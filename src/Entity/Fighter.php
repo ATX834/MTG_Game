@@ -241,4 +241,19 @@ class Fighter
 
         return $this;
     }
+
+    public function attack(Fighter $target) {
+        // retravailler le calcul de dégât
+        $damage = floor($this->getPower() - ($target->getToughness()) * rand(1, 1.5));
+
+        $damage === 0 ? $damage += 1 : $damage = $damage;
+
+        // dd($damage, $attacker);
+
+        $target->setHealthPoint($target->getHealthPoint() - $damage);
+    }
+
+    public function cast(Spell $spell, Fighter $target) {
+        $spell->execute($target);
+    }
 }

@@ -96,8 +96,8 @@ class FightController extends AbstractController
                 ]);
             }
             
-            // $as->attack($this->player2, $this->player1);
-            $as->iaChoice($this->player2, $this->player1);
+            $as->attack($this->player2, $this->player1);
+            // $as->iaChoice($this->player2, $this->player1);
 
             if(!$as->isAlive($this->player1))
             {
@@ -107,8 +107,8 @@ class FightController extends AbstractController
             }
         } else {
             
-            // $as->attack($this->player2, $this->player1);
-            $as->iaChoice($this->player2, $this->player1);
+            $as->attack($this->player2, $this->player1);
+            // $as->iaChoice($this->player2, $this->player1);
             
             if(!$as->isAlive($this->player1))
             {

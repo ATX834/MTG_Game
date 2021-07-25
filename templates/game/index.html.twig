@@ -20,12 +20,15 @@ body
 }
 </style>
 <div class='row'>
-    <div class='card bg-danger mx-auto text-center w-25 my-4' style='height: 90px'>
-        <span class="blink_me text-dark my-auto h1">Choose your fighter !</span>
+    <div class='card bg-dark mx-auto text-center my-4' style='height: 90px'>
+        <span class="blink_me text-white my-auto h1">Choose your fighter !</span>
     </div>
 </div>
 <div class='row my-5 mx-5'>
     {% for character in characters %}
+
+
+        {# <img src="{{character.image}}" style='border-style: solid;object-fit: cover; height: 6rem; width: 6rem;'> #}
         <div class="card bg-transparent mx-4" style="width: 18rem;">
             <img class="card-img-top" src="{{character.image}}" style='background-size : cover; height:12rem' alt="Card image cap">
 
@@ -74,8 +77,8 @@ body
     {% endfor %}
 
     <div class='row'>
-        <p class='h3 text-white'>Player 1 : <span id='player1-chosen'></span></p>
-        <p class='h3 text-white'>Player 2 : <span id='player2-chosen'></span></p>
+        <p class='h3 text-danger'>Player 1 : <span id='player1-chosen'></span></p>
+        <p class='h3 text-danger'>Player 2 : <span id='player2-chosen'></span></p>
         <a class='d-none nes-btn is-primary w-25 mx-auto' id='startGame' href='#'>START GAME</a>
     </div>
 

@@ -127,7 +127,7 @@ class ActionService
 
         $damage === 0 ? $damage += 1 : $damage = $damage;
 
-        dd($damage, $attacker);
+        // dd($damage, $attacker);
 
         $defender->setHealthPoint($defender->getHealthPoint() - $damage);
 

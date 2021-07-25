@@ -6,29 +6,9 @@
 
 {% block body %}
 <style>
-* {
-    margin: 0;
-}
-
-html, body {
-    height: 100%;
+body {
     background-image : url('/image/backgrounds/landscape.gif');
     background-size : cover;
-}
-
-.wrapper {
-    min-height: 100%;
-    height: auto !important;
-    height: 100%;
-    .margin: 0 auto -4em;
-}
-
-.footer, .push {
-    height: 4em;
-}
-.vl {
-  border-left: 2px solid grey;
-  height: 20rem;
 }
 
 .m-topNbottom {
@@ -40,10 +20,58 @@ html, body {
 .progress-bar-correct{
     height:16px;width:11rem;
 }
+.reducefontsize{
+     font-style: normal;
+     font-size: 11px ! important; 
+  }
+.log-text{
+     font-style: normal;
+     font-size: 12px ! important; 
+  }
 </style>
-<nav class="navbar navbar-expand-lg navbar-light bg-transparent">
-    <ul class="navbar-nav">
-        <div class="card bg-light mx-4" style="width: 12rem;">
+<div class='row'>
+    <div class='col-3'>
+                            {# affichage joueur #}
+        <div class="card bg-light mx-auto" style="width: 12rem;">
+            <img class="card-img-top" src="{{player1.personnage.image}}" style='border-style: solid;object-fit: cover; height:12rem' alt="Card image cap">
+            <progress class="nes-progress is-error my-3 mx-auto progress-bar-correct" value="{{player1.healthPoint}}" max="{{player1.maxHealthPoint}}"></progress>
+            <p class='text-center my-3'> {{player1.healthPoint}} / {{player1.maxHealthPoint}}</p>
+            <progress class="nes-progress is-success progress-bar-correct" value="{{player1.manaBase}}" max="5"></progress>
+            <p class='text-center my-3'> {{player1.manaBase}} / 5</p>
+            <p class='text-center'>{{player1.personnage.name}}</p>
+                                {# Interface des actions #}
+        </div>
+            <hr>
+            <p class='text-center text-light'>Spells</p>
+            <div class='row'>
+                <a class='nes-btn reducefontsize is-primary text-dark mx-auto w-50' href="{{ path('fight_choosing_attack', {'isItSpell': 0, 'attack': -1}) }}">Attack</a><br>
+            </div>
+            <div class='row'> 
+            {% for spell in player1.personnage.spells %}
+                {% if loop.first %}
+                    <a class='nes-btn is-success reducefontsize text-dark text-wrap mx-auto my-2 w-50' title='{{spell.name}}' href="{{ path('fight_choosing_attack', {'isItSpell': 1, 'attack': spell.id }) }}">{{spell.name}}</a>
+                {% else %}
+                    <a class='nes-btn is-warning reducefontsize text-wrap mx-auto my-2 w-50' title='{{spell.name}}' href="{{ path('fight_choosing_attack', {'isItSpell': 1, 'attack': spell.id }) }}">{{spell.name}}</a><br>
+                {% endif %}
+            {% endfor %}
+            </div>
+            <div class='row'>
+                <a class='mx-auto reducefontsize nes-btn is-error text-dark my-2 w-50' href="{{ path('fight_choosing_attack', {'isItSpell': 0, 'attack': -2}) }}">Ultimate</a>
+            </div>
+    </div>
+    <div class='col-6'>
+                                {# Log de combat #}
+        <div class="nes-container is-dark with-title text-wrap" style='min-height: 630px;max-height: 630px;'>
+            <p class="title">What's happen ?</p>
+            <p class='log-text'>Good morning. Thou hast had a good night's sleep, I hope.</p>
+            <p class='log-text'>Good morning. Thou hast had a good night's sleep, I hope.</p>
+            <p class='log-text'>Good morning. Thou hast had a good night's sleep, I hope.</p>
+            <p class='log-text'>Good morning. Thou hast had a good night's sleep, I hope.</p>
+        </div>
+    </div>
+    <div class='col-3'>
+                        {# Affichage ennemi #}
+        <div class="card bg-light mx-auto" style="width: 12rem;">
             <img class="card-img-top" src="{{player2.personnage.image}}" style='border-style: solid;object-fit: cover; height:12rem' alt="Card image cap">
             <progress class="nes-progress is-error my-3 mx-auto progress-bar-correct" value="{{player2.healthPoint}}" max="{{player2.maxHealthPoint}}"></progress>
             <p class='text-center my-3'> {{player2.healthPoint}} / {{player2.maxHealthPoint}}</p>
@@ -51,48 +79,12 @@ html, body {
             <p class='text-center my-3'> {{player2.manaBase}} / 5</p>
             <p class='text-center'>{{player2.personnage.name}}</p>
         </div>
-    </ul>
-</nav>
-<div class="wrapper">
-
-    <div class="nes-container is-dark with-title text-wrap" style='width:60rem; min-height: 630px;max-height: 630px;'>
-        <p class="title">Container.is-dark</p>
-        <p>Good morning. Thou hast had a good night's sleep, I hope.</p>
-        <p>Good morning. Thou hast had a good night's sleep, I hope.</p>
-        <p>Good morning. Thou hast had a good night's sleep, I hope.</p>
-        <p>Good morning. Thou hast had a good night's sleep, I hope.</p>
-    </div>
-    <div class="push"></div>
-
-</div>
-<div class="footer">
-        <div class='row'>
-            <div class="col-2 card bg-light mx-4" style="width: 12rem;">
-                <img class="card-img-top" src="{{player1.personnage.image}}" style='border-style: solid;object-fit: cover; height:12rem' alt="Card image cap">
-                <progress class="nes-progress is-error my-3 mx-auto progress-bar-correct" value="{{player1.healthPoint}}" max="{{player1.maxHealthPoint}}"></progress>
-                <p class='text-center my-3'> {{player1.healthPoint}} / {{player1.maxHealthPoint}}</p>
-                <progress class="nes-progress is-success progress-bar-correct" value="{{player1.manaBase}}" max="5"></progress>
-                <p class='text-center my-3'> {{player1.manaBase}} / 5</p>
-                <p class='text-center'>{{player1.personnage.name}}</p>
-            </div>
-            <div class="col-2">
-                <div class="vl">
-                    <p class='text-center text-light'>Spells</p>
-                    <div class='mx-auto'>
-                        <a class='nes-btn is-primary text-dark m-topNbottom my-2' href="{{ path('fight_choosing_attack', {'isItSpell': 0, 'attack': -1}) }}">Attack</a><br>
-                        {% for spell in player1.personnage.spells %}
-                            {% if loop.first %}
-                                <a class='nes-btn is-success text-dark text-wrap m-middle my-2' title='{{spell.name}}' href="{{ path('fight_choosing_attack', {'isItSpell': 1, 'attack': spell.id }) }}">Spell 1</a>
-                            {% else %}
-                                <a class='nes-btn is-warning text-wrap mx-2 my-2' title='{{spell.name}}' href="{{ path('fight_choosing_attack', {'isItSpell': 1, 'attack': spell.id }) }}">Spell 2</a><br>
-                            {% endif %}
-                        {% endfor %}
-                        <a class='nes-btn is-error text-dark m-topNbottom my-2' href="{{ path('fight_choosing_attack', {'isItSpell': 0, 'attack': -2}) }}">Ultimate</a>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
+
+
+
+            
+
 
 {% endblock %}
