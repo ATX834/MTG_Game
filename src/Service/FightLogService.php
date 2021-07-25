@@ -155,32 +155,31 @@ class FightLogService
                 array_push($logs, "You lose 1 toughness point.");
                 array_push($logs, $attacker->getPersonnage()->getName() ." gains 1 power point.");
             }
-            if($spell->getName() === 'Snipe')
-            {
-                array_push($logs, $target->getPersonnage()->getName() . " snipe " . $attacker->getPersonnage()->getName() . " et lui inflige 5 dégâts.");
-            }
-            if($spell->getName() === 'Remote')
-            {
-                array_push($logs, $attacker->getPersonnage()->getName() . " est en remote.");
-                array_push($logs, "Il est INTOUCHABLE.");
+        }
+        if($spell->getName() === 'Sniper')
+        {
+            array_push($logs, $attacker->getPersonnage()->getName() . " snipe " . $target->getPersonnage()->getName() . " et lui inflige 5 dégâts.");
+        }
+        if($spell->getName() === 'Remote')
+        {
+            array_push($logs, $attacker->getPersonnage()->getName() . " est en remote.");
+            array_push($logs, "Il est INTOUCHABLE.");
 
-            }
-            if($spell->getName() === 'Grim Ambrée')
-            {
-                array_push($logs, "Longue journée ...");
-                array_push($logs, $attacker->getPersonnage()->getName() . " se met une pinte de Grim Ambrée dans le nez.");
-                array_push($logs, $attacker->getPersonnage()->getName() . " regagne 3 points de vie.");
-                array_push($logs, $attacker->getPersonnage()->getName() . " se sent déjà mieux.");
-            }
-            if($spell->getName() === 'Pas partir avant 17h')
-            {
-                array_push($logs, "Longue journée ...");
-                array_push($logs, $target->getPersonnage()->getName() . " pars avant 17h ...");
-                array_push($logs, $attacker->getPersonnage()->getName() . " l'a vue.");
-                array_push($logs, $target->getPersonnage()->getName() . " va prendre misère.");
-                array_push($logs, $target->getPersonnage()->getName() . " perd deux points de vie et un point d'endurance.");
-                array_push($logs, $attacker->getPersonnage()->getName() . " gagne un point de force.");
-            }
+        }
+        if($spell->getName() === 'Grimm ambrée')
+        {
+            array_push($logs, "Longue journée ...");
+            array_push($logs, $attacker->getPersonnage()->getName() . " se met une pinte de Grim Ambrée dans le nez.");
+            array_push($logs, $attacker->getPersonnage()->getName() . " regagne 3 points de vie.");
+            array_push($logs, $attacker->getPersonnage()->getName() . " se sent déjà mieux.");
+        }
+        if($spell->getName() === 'Pas partir avant 17h')
+        {
+            array_push($logs, $target->getPersonnage()->getName() . " part avant 17h ...");
+            array_push($logs, $attacker->getPersonnage()->getName() . " l'a vue.");
+            array_push($logs, $target->getPersonnage()->getName() . " va prendre misère.");
+            array_push($logs, $target->getPersonnage()->getName() . " perd deux points de vie et un point d'endurance.");
+            array_push($logs, $attacker->getPersonnage()->getName() . " gagne un point de force.");
         }
 
         $this->session->set('fightLogs', $logs);

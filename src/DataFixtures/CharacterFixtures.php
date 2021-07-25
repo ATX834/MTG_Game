@@ -62,7 +62,7 @@ class CharacterFixtures extends Fixture implements DependentFixtureInterface
         $vincent
             ->setName('Vincent')
             ->setImage('/image/characters/vincent.png')
-            ->addSpell($this->getReference('Grim ambrée'))
+            ->addSpell($this->getReference('Grimm ambrée'))
             ->addSpell($this->getReference('Remote'))
             ->addColor($this->getReference('WHITE'))
             ->setPower(9)

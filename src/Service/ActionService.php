@@ -46,7 +46,7 @@ class ActionService
         {
             $this->pathToExile($attacker, $defender);
         }
-        if($spell->getName() === 'Revitalize' || $spell->getName() === 'Grim ambrée')
+        if($spell->getName() === 'Revitalize' || $spell->getName() === 'Grimm ambrée')
         {
             $this->revitalize($attacker);
         }

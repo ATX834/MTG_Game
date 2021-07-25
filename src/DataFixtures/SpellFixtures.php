@@ -93,7 +93,7 @@ class SpellFixtures extends Fixture
             ->setType('Instant')
             ->setManaCost(3)
             ->setText("Y'a SOIF !");
-        $this->addReference('Grim ambrée', $grimAmbree);
+        $this->addReference('Grimm ambrée', $grimAmbree);
 
 
         $pasPartirAvant17h = new Spell();

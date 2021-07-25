@@ -186,7 +186,7 @@ class FightController extends AbstractController
                 'fightLogs' => $this->session->get('fightLogs'),
                 'winner' => null,
                 'bonusStage' => $this->session->get('bonusStage')
-        ]);
+            ]);
         }
 
         if($this->session->get('isItYourTurn'))
@@ -240,9 +240,7 @@ class FightController extends AbstractController
                     'winner' => $this->player2->getId()
                 ]);
             }
-            
-            $as->attack($this->player1, $this->player2);
-            
+                        
             if(!$as->isAlive($this->player2))
             {
                 return $this->redirectToRoute('fight_end', [
