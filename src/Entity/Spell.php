@@ -22,7 +22,7 @@ class Spell
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $name = 'Super powaa';
+    private $name;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -63,6 +63,11 @@ class Spell
      * @ORM\ManyToMany(targetEntity=Fighter::class, mappedBy="spells")
      */
     private $fighters;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $text;
 
     public function __construct()
     {
@@ -206,6 +211,18 @@ class Spell
         if ($this->fighters->removeElement($fighter)) {
             $fighter->removeSpell($this);
         }
+
+        return $this;
+    }
+
+    public function getText(): ?string
+    {
+        return $this->text;
+    }
+
+    public function setText(string $text): self
+    {
+        $this->text = $text;
 
         return $this;
     }

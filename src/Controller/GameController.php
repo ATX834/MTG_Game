@@ -9,6 +9,7 @@ use App\Service\CardService;
 use App\Repository\CharacterRepository;
 use App\Repository\FighterRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Entity\Character;
 use App\Entity\Fighter;
 /**
@@ -16,21 +17,36 @@ use App\Entity\Fighter;
  */
 class GameController extends AbstractController
 {
+    
+    private $session;
+
+    public function __construct(SessionInterface $session)
+    {
+        $this->session = $session;
+    }
     /**
      * @Route("/", name="index")
      */
     public function chooseCharacter(CharacterRepository $characterRepository): Response
     {
         return $this->render('game/index.html.twig',[
-            'characters' => $characterRepository->findAll()
+            'characters' => $characterRepository->findByIsABonusCharacter(false),
+            'bonusCharacters' => $characterRepository->findByIsABonusCharacter(true),
+            'hasWinOneGame' => $this->session->get("hasWinOneGame"),
         ]);
     }
 
     /**
-     * @Route("/select/{player1}/{player2}", name="selecting_character")
+     * @Route("/select/{player1}/{player2}/{bonusStage}", name="selecting_character")
      */
-    public function selectingCharacter(Character $player1, Character $player2, EntityManagerInterface $em): Response
+    public function selectingCharacter(Character $player1, Character $player2, bool $bonusStage,EntityManagerInterface $em): Response
     {
+        // dd($player1, $player2);
+        if($bonusStage)
+        {
+            $this->session->set('bonusStage', true);
+        }
+
         $fighter1 = new Fighter();
         $fighter2 = new Fighter();
 
@@ -49,15 +65,16 @@ class GameController extends AbstractController
             ->setSpeed($player1->getSpeed())
             ->setHealthPoint($player1->getHealthPoint())
             ->setMaxHealthPoint($player1->getHealthPoint())
-            ->setManaBase(0);
-
+            ->setManaBase(0)
+            ->setHealthPointStartOfTurn($player1->getHealthPoint());
+        
         foreach($spellsP1 as $spell){
             $fighter1->addSpell($spell);
         }
         foreach($colorsP1 as $color){
             $fighter1->addColor($color);
         }
-
+            
         $fighter2
             ->setPersonnage($player2)
             ->setType('Player')
@@ -67,7 +84,9 @@ class GameController extends AbstractController
             ->setSpeed($player2->getSpeed())
             ->setHealthPoint($player2->getHealthPoint())
             ->setMaxHealthPoint($player2->getHealthPoint())
-            ->setManaBase(0);
+            ->setManaBase(0)
+            ->setHealthPointStartOfTurn($player2->getHealthPoint());
+
 
         foreach($spellsP2 as $spell){
             $fighter2->addSpell($spell);

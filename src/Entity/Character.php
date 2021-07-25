@@ -60,6 +60,16 @@ class Character
      */
     private $speed;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $ultimateText;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isABonusCharacter;
+
     public function __construct()
     {
         $this->spells = new ArrayCollection();
@@ -187,6 +197,30 @@ class Character
     public function setSpeed(int $speed): self
     {
         $this->speed = $speed;
+
+        return $this;
+    }
+
+    public function getUltimateText(): ?string
+    {
+        return $this->ultimateText;
+    }
+
+    public function setUltimateText(string $ultimateText): self
+    {
+        $this->ultimateText = $ultimateText;
+
+        return $this;
+    }
+
+    public function getIsABonusCharacter(): ?bool
+    {
+        return $this->isABonusCharacter;
+    }
+
+    public function setIsABonusCharacter(bool $isABonusCharacter): self
+    {
+        $this->isABonusCharacter = $isABonusCharacter;
 
         return $this;
     }

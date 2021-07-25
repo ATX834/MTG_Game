@@ -36,10 +36,22 @@ class FightController extends AbstractController
      * @Route("", name="index")
      */
     public function index(FighterRepository $fighterRepository): Response
-    {       
+    {
+        $creatures = [];
+
+        $this->player1->setHealthPointStartOfTurn($this->player1->getHealthPoint());
+        $this->player2->setHealthPointStartOfTurn($this->player2->getHealthPoint());
+
         if(null === $this->session->get('nbTurn'))
         {
             $this->session->set('nbTurn', 0);
+        }
+
+        if(null === $this->session->get('fightLogs'))
+        {
+            $this->session->set('fightLogs', [
+                'Welcome to the FIGHT ARENA !'
+            ]);
         }
 
         if($this->session->get('nbTurn') !== 0)
@@ -52,13 +64,15 @@ class FightController extends AbstractController
 
         $this->player1->getSpeed() >= $this->player2->getSpeed() ? $this->session->set('isItYourTurn', true) :$this->session->set('isItYourTurn', false);
 
-        // $this->session->remove('nbTurn');
         $this->em->flush();
 
         return $this->render('fight/index.html.twig', [
             'player1' => $this->player1,
             'player2' => $this->player2,
-            'nbTurn' => $this->session->get('nbTurn')
+            'nbTurn' => $this->session->get('nbTurn'),
+            'fightLogs' => $this->session->get('fightLogs'),
+            'winner' => null,
+            'bonusStage' => $this->session->get('bonusStage')
         ]);
     }
 
@@ -67,6 +81,8 @@ class FightController extends AbstractController
      */
     public function choosingAttack(bool $isItSpell, int $attack): Response
     {
+        $this->session->remove('fightLogs');
+        $this->session->set('fightLogs', []);
         return $isItSpell === true ? $this->redirectToRoute('fight_use_spell', [
             'spell' => $attack
         ])
@@ -80,6 +96,7 @@ class FightController extends AbstractController
      */
     public function attack(int $attack, ActionService $as): Response
     {
+        $iaChoices = ['Attack'];
         if($attack === 0)
         {
             return $this->redirectToRoute('fight_ultimate');
@@ -92,67 +109,257 @@ class FightController extends AbstractController
             if(!$as->isAlive($this->player2))
             {
                 return $this->redirectToRoute('fight_end', [
-                    'loser' => $this->player2->getId()
+                    'winner' => $this->player1->getId()
                 ]);
             }
             
-            $as->attack($this->player2, $this->player1);
-            // $as->iaChoice($this->player2, $this->player1);
-
+            foreach($this->player2->getSpells() as $spell)
+            {
+                if($as->checkIfEnoughMana($this->player2, $spell->getManaCost()))
+                {
+                    array_push($iaChoices, $spell);
+                }
+            }
+            if($as->checkIfEnoughMana($this->player2, 5)){
+                array_push($iaChoices, 'Ultimate');
+            }
+            $as->iaChoice($this->player2, $this->player1, $iaChoices);
+            
             if(!$as->isAlive($this->player1))
             {
                 return $this->redirectToRoute('fight_end', [
-                    'loser' => $this->player1->getId()
+                    'winner' => $this->player2->getId()
                 ]);
             }
         } else {
             
-            $as->attack($this->player2, $this->player1);
-            // $as->iaChoice($this->player2, $this->player1);
+            foreach($this->player2->getSpells() as $spell)
+            {
+                if($as->checkIfEnoughMana($this->player2, $spell->getManaCost()))
+                {
+                    array_push($iaChoices, $spell);
+                }
+            }
+            if($as->checkIfEnoughMana($this->player2, 5)){
+                array_push($iaChoices, 'Ultimate');
+            }
+            $as->iaChoice($this->player2, $this->player1, $iaChoices);
             
             if(!$as->isAlive($this->player1))
             {
                 return $this->redirectToRoute('fight_end', [
-                    'loser' => $this->player1->getId()
+                    'winner' => $this->player2->getId()
                 ]);
             }
             
             $as->attack($this->player1, $this->player2);
+            
             if(!$as->isAlive($this->player2))
             {
                 return $this->redirectToRoute('fight_end', [
-                    'loser' => $this->player2->getId()
+                    'winner' => $this->player1->getId()
                 ]);
             }
 
         }
         return $this->redirectToRoute('fight_index');
     }
-
+    
     /**
      * @Route("/use/{spell}", name="use_spell")
      */
-    public function spell(Spell $spell): Response
+    public function spell(Spell $spell, ActionService $as): Response
     {
-        // implémenter l'utilisation des spells
+        $iaChoices = ['Attack'];
+
+        if(!$as->checkIfEnoughMana($this->player1, $spell->getManaCost()))
+        {
+            $this->session->remove('fightLogs');
+            $this->session->set('fightLogs', [
+                "You can't use " . $spell->getName() . " with " . $this->player1->getManaBase() . " mana."
+            ]);
+
+            return $this->render('fight/index.html.twig', [
+                'player1' => $this->player1,
+                'player2' => $this->player2,
+                'nbTurn' => $this->session->get('nbTurn'),
+                'fightLogs' => $this->session->get('fightLogs'),
+                'winner' => null,
+                'bonusStage' => $this->session->get('bonusStage')
+        ]);
+        }
+
+        if($this->session->get('isItYourTurn'))
+        {
+            $as->checkSpell($this->player1, $this->player2, $spell);
+            
+            if(!$as->isAlive($this->player2))
+            {
+                return $this->redirectToRoute('fight_end', [
+                    'winner' => $this->player1->getId()
+                ]);
+            }
+            
+            foreach($this->player2->getSpells() as $spell)
+            {
+                if($as->checkIfEnoughMana($this->player2, $spell->getManaCost()))
+                {
+                    array_push($iaChoices, $spell);
+                }
+            }
+            if($as->checkIfEnoughMana($this->player2, 5)){
+                array_push($iaChoices, 'Ultimate');
+            }
+            $as->iaChoice($this->player2, $this->player1, $iaChoices);
+            
+            if(!$as->isAlive($this->player1))
+            {
+                return $this->redirectToRoute('fight_end', [
+                    'winner' => $this->player2->getId()
+                ]);
+            }
+        } else {
+            
+            foreach($this->player2->getSpells() as $iaSpell)
+            {
+                if($as->checkIfEnoughMana($this->player2, $iaSpell->getManaCost()))
+                {
+                    array_push($iaChoices, $iaSpell);
+                }
+            }
+            if($as->checkIfEnoughMana($this->player2, 5)){
+                array_push($iaChoices, 'Ultimate');
+            }
+            $as->iaChoice($this->player2, $this->player1, $iaChoices);
+    
+            $as->checkSpell($this->player1, $this->player2, $spell);
+
+            if(!$as->isAlive($this->player1))
+            {
+                return $this->redirectToRoute('fight_end', [
+                    'winner' => $this->player2->getId()
+                ]);
+            }
+            
+            $as->attack($this->player1, $this->player2);
+            
+            if(!$as->isAlive($this->player2))
+            {
+                return $this->redirectToRoute('fight_end', [
+                    'winner' => $this->player1->getId()
+                ]);
+            }
+    
+        }
         return $this->redirectToRoute('fight_index');
     }
 
     /**
      * @Route("/ultimate", name="ultimate")
      */
-    public function ultimate(): Response
+    public function ultimate(ActionService $as): Response
     {
-        // implémenter l'utilisation des ulti
+        $iaChoices = ['Attack'];
+
+        if(!$as->checkIfEnoughMana($this->player1, 5))
+        {
+            $this->session->remove('fightLogs');
+            $this->session->set('fightLogs', [
+                "You can't cast your ultimate with " . $this->player1->getManaBase() . " mana."
+            ]);
+
+            return $this->render('fight/index.html.twig', [
+                'player1' => $this->player1,
+                'player2' => $this->player2,
+                'nbTurn' => $this->session->get('nbTurn'),
+                'fightLogs' => $this->session->get('fightLogs'),
+                'winner' => null,
+                'bonusStage' => $this->session->get('bonusStage')
+            ]);
+        }
+
+        if($this->session->get('isItYourTurn'))
+        {
+            $as->checkUltimate($this->player1, $this->player2);
+            
+            if(!$as->isAlive($this->player2))
+            {
+                return $this->redirectToRoute('fight_end', [
+                    'winner' => $this->player1->getId()
+                ]);
+            }
+            
+            foreach($this->player2->getSpells() as $spell)
+            {
+                if($as->checkIfEnoughMana($this->player2, $spell->getManaCost()))
+                {
+                    array_push($iaChoices, $spell);
+                }
+            }
+            if($as->checkIfEnoughMana($this->player2, 5)){
+                array_push($iaChoices, 'Ultimate');
+            }
+            $as->iaChoice($this->player2, $this->player1, $iaChoices);
+            
+            if(!$as->isAlive($this->player1))
+            {
+                return $this->redirectToRoute('fight_end', [
+                    'winner' => $this->player2->getId()
+                ]);
+            }
+        } else {
+            
+            foreach($this->player2->getSpells() as $iaSpell)
+            {
+                if($as->checkIfEnoughMana($this->player2, $iaSpell->getManaCost()))
+                {
+                    array_push($iaChoices, $iaSpell);
+                }
+            }
+            if($as->checkIfEnoughMana($this->player2, 5)){
+                array_push($iaChoices, 'Ultimate');
+            }
+
+            $as->iaChoice($this->player2, $this->player1, $iaChoices);
+    
+            
+            if(!$as->isAlive($this->player1))
+            {
+                return $this->redirectToRoute('fight_end', [
+                    'winner' => $this->player2->getId()
+                ]);
+            }
+            $as->checkUltimate($this->player1, $this->player2);
+                        
+            if(!$as->isAlive($this->player2))
+            {
+                return $this->redirectToRoute('fight_end', [
+                    'winner' => $this->player1->getId()
+                ]);
+            }
+    
+        }
         return $this->redirectToRoute('fight_index');
     }
 
     /**
-     * @Route("/end/{loser}", name="end")
+     * @Route("/end/{winner}", name="end")
      */
-    public function fightEnd(Fighter $loser)
+    public function fightEnd(Fighter $winner)
     {
-        $loser->getPlayer() === 'Player 1' ? dd('you lose') : dd('you win');
+        if(null === $this->session->get('hasWinOneGame') && $winner->getPlayer() === 'Player 1')
+        {
+            $this->session->set('hasWinOneGame', true);
+        }
+
+        return $this->render('fight/index.html.twig', [
+            'player1' => $this->player1,
+            'player2' => $this->player2,
+            'nbTurn' => $this->session->get('nbTurn'),
+            'fightLogs' => $this->session->get('fightLogs'),
+            'winner' => ($winner->getPlayer() === 'Player 1' ? $this->player1 :  $this->player2),
+            'bonusStage' => $this->session->get('bonusStage')
+        ]);
     }
 
     /**
@@ -162,6 +369,9 @@ class FightController extends AbstractController
     {
         $this->session->remove('nbTurn');
         $this->session->remove('isItYourTurn');
+        $this->session->remove('fightLogs');
+        $this->session->remove('bonusStage');
+        
         foreach($fighterRepository->findAll() as $fighter)
         {
             $fighterRepository->destroy($fighter);

@@ -1,0 +1,45 @@
+{% for character in characters %}
+    <div class="card bg-transparent mx-4" style="width: 18rem;">
+        <img class="card-img-top" src="{{character.image}}" style='background-size : cover; height:12rem' alt="Card image cap">
+        <button type="button" class="nes-btn is-success characterSelect mx-auto my-2" style='width: 10rem' value="{{character.id}}" data-bs-toggle="modal" data-bs-target="#modalSelectCharacter">
+            {{character.name}}
+        </button>
+        <button type="button" class="nes-btn is-success mx-auto my-2" style='width: 10rem'value="{{character.name}}" data-bs-toggle="modal" data-bs-target="#infoModal{{character.id}}">
+            Infos
+        </button>
+    </div>
+    
+    <div class="modal fade" id="infoModal{{character.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">{{character.name}}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p>
+            {% for color in character.colors %}
+                {{color.name}} {{"\n"}}
+            {% endfor %}
+            </p>
+            <p>Power : {{character.power}}</p>
+            <p>Toughness : {{character.toughness}}</p>
+            <p>Speed : {{character.speed}}</p>
+            <p>HP : {{character.healthPoint}}</p>
+            <hr>
+            <h5 class='text-center'>Spells</h3>
+            {% for spell in character.spells %}
+                <p>
+                    <img class='my-4' src='{{spell.image}}' width=100/>
+                    {{spell.name}}
+                </p>
+            {% endfor %}
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="mx-auto nes-btn is-error" data-bs-dismiss="modal">Close</button>
+        </div>
+        </div>
+    </div>
+    </div>
+    
+{% endfor %}

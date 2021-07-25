@@ -25,64 +25,28 @@ body
     </div>
 </div>
 <div class='row my-5 mx-5'>
-    {% for character in characters %}
-
-
-        {# <img src="{{character.image}}" style='border-style: solid;object-fit: cover; height: 6rem; width: 6rem;'> #}
-        <div class="card bg-transparent mx-4" style="width: 18rem;">
-            <img class="card-img-top" src="{{character.image}}" style='background-size : cover; height:12rem' alt="Card image cap">
-
-            <button type="button" class="nes-btn is-success characterSelect mx-auto my-2" style='width: 10rem' value="{{character.id}}" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                {{character.name}}
-            </button>
-            <button type="button" class="nes-btn is-success mx-auto my-2" style='width: 10rem'value="{{character.name}}" data-bs-toggle="modal" data-bs-target="#infoModal{{character.id}}">
-                Infos
-            </button>
-        </div>
-        
-        <div class="modal fade" id="infoModal{{character.id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">{{character.name}}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>
-                {% for color in character.colors %}
-                    {{color.name}} {{"\n"}}
-                {% endfor %}
-                </p>
-                <p>Power : {{character.power}}</p>
-                <p>Toughness : {{character.toughness}}</p>
-                <p>Speed : {{character.speed}}</p>
-                <p>HP : {{character.healthPoint}}</p>
-                <hr>
-
-                <h5 class='text-center'>Spells</h3>
-                {% for spell in character.spells %}
-                    <p>
-                        <img class='my-4' src='{{spell.image}}' width=100/>
-                        {{spell.name}}
-                    </p>
-                {% endfor %}
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="mx-auto nes-btn is-error" data-bs-dismiss="modal">Close</button>
-            </div>
-            </div>
-        </div>
-        </div>
-        
-    {% endfor %}
+    <div id='characters' class='row'>
+        {% include 'components/_card_character.html.twig' with {
+            'characters' : characters
+        } %}
+    </div>
+ 
+    <div id='bonusCharacters' class='row d-none'>
+        {% include 'components/_card_character.html.twig' with {
+            'characters' : bonusCharacters
+        } %}
+    </div>
 
     <div class='row'>
         <p class='h3 text-danger'>Player 1 : <span id='player1-chosen'></span></p>
         <p class='h3 text-danger'>Player 2 : <span id='player2-chosen'></span></p>
         <a class='d-none nes-btn is-primary w-25 mx-auto' id='startGame' href='#'>START GAME</a>
+        {% if hasWinOneGame == true %}
+            <button class='nes-btn is-warning w-25 mx-auto' id='showMeReal'>SHOW ME THE REAL GAME !</button>
+        {% endif %}
     </div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modalSelectCharacter" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
         <div class="modal-header">
@@ -105,6 +69,10 @@ body
 <script>
 var isPlayer1Ready = false;
 var isPlayer2Ready = false;
+var onOffBonus = 0;
+
+var bonusBackground = "url('/image/backgrounds/bonus_landscape.gif')";
+var basicBackground = "url('/image/backgrounds/landscape.gif')";
 
 let player1Character;
 let player2Character;
@@ -134,9 +102,33 @@ for(let selectCharacter of document.querySelectorAll('.characterSelect')){
             {
                 let startGame = document.querySelector('#startGame')
                 startGame.classList.remove('d-none')
-                startGame.href =  '/game/select/' + player1Character + '/' + player2Character;
+                startGame.href =  '/game/select/' + player1Character + '/' + player2Character + '/' + onOffBonus;
             }
         })
+    })
+}
+
+var showMeRealBtn = document.querySelector('#showMeReal');
+
+
+if(showMeRealBtn !== null)
+{
+    showMeRealBtn.addEventListener('click', function() {
+        if(onOffBonus === 0)
+        {
+            document.querySelector('#bonusCharacters').classList.remove('d-none');
+            document.querySelector('#characters').classList.add('d-none');
+            showMeRealBtn.innerHTML = 'BACK TO THE OLD GAME';
+            onOffBonus = 1;
+            document.body.style.backgroundImage = bonusBackground;
+        } else if(onOffBonus === 1)
+        {
+            document.querySelector('#characters').classList.remove('d-none');
+            document.querySelector('#bonusCharacters').classList.add('d-none');
+            showMeRealBtn.innerHTML = 'SHOW ME THE REAL GAME !';
+            onOffBonus = 0;
+            document.body.style.backgroundImage = basicBackground;
+        }
     })
 }
 </script>

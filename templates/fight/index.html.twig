@@ -1,15 +1,30 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Let's FIGHT!{% endblock %}
+{% block title %}
+    {% if winner is not null %}
+        {{winner.personnage.name}} WINS !
+    {% else %}
+        Let's FIGHT!
+    {% endif %}
+{% endblock %}
 
 {% set navbar = false %}
 
 {% block body %}
 <style>
-body {
-    background-image : url('/image/backgrounds/landscape.gif');
-    background-size : cover;
-}
+{% if bonusStage == true %}
+    body
+    {
+        background-image : url('/image/backgrounds/bonus_landscape.gif');
+        background-size : cover;
+    }
+{% else %}
+    body
+    {
+        background-image : url('/image/backgrounds/landscape.gif');
+        background-size : cover;
+    }
+{% endif %}
 
 .m-topNbottom {
     margin-left: 12rem!important;
@@ -31,7 +46,7 @@ body {
 </style>
 <div class='row'>
     <div class='col-3'>
-                            {# affichage joueur #}
+                                {# affichage joueur #}
         <div class="card bg-light mx-auto" style="width: 12rem;">
             <img class="card-img-top" src="{{player1.personnage.image}}" style='border-style: solid;object-fit: cover; height:12rem' alt="Card image cap">
             <progress class="nes-progress is-error my-3 mx-auto progress-bar-correct" value="{{player1.healthPoint}}" max="{{player1.maxHealthPoint}}"></progress>
@@ -42,31 +57,30 @@ body {
                                 {# Interface des actions #}
         </div>
             <hr>
-            <p class='text-center text-light'>Spells</p>
+            <p class='text-center text-light'>Actions</p>
             <div class='row'>
-                <a class='nes-btn reducefontsize is-primary text-dark mx-auto w-50' href="{{ path('fight_choosing_attack', {'isItSpell': 0, 'attack': -1}) }}">Attack</a><br>
+                <a class='nes-btn reducefontsize is-primary text-dark mx-auto w-50' href="{{ path('fight_choosing_attack', {'isItSpell': 0, 'attack': -1}) }}" title="Simple attack">Attack</a><br>
             </div>
             <div class='row'> 
             {% for spell in player1.personnage.spells %}
                 {% if loop.first %}
-                    <a class='nes-btn is-success reducefontsize text-dark text-wrap mx-auto my-2 w-50' title='{{spell.name}}' href="{{ path('fight_choosing_attack', {'isItSpell': 1, 'attack': spell.id }) }}">{{spell.name}}</a>
+                    <a class='nes-btn is-success reducefontsize text-dark text-wrap mx-auto my-2 w-50' title='Mana cost : {{spell.manaCost}}, {{spell.text}}' href="{{ path('fight_choosing_attack', {'isItSpell': 1, 'attack': spell.id }) }}">{{spell.name}}</a>
                 {% else %}
-                    <a class='nes-btn is-warning reducefontsize text-wrap mx-auto my-2 w-50' title='{{spell.name}}' href="{{ path('fight_choosing_attack', {'isItSpell': 1, 'attack': spell.id }) }}">{{spell.name}}</a><br>
+                    <a class='nes-btn is-warning reducefontsize text-wrap mx-auto my-2 w-50' title='Mana cost : {{spell.manaCost}}, {{spell.text}}' href="{{ path('fight_choosing_attack', {'isItSpell': 1, 'attack': spell.id }) }}">{{spell.name}}</a><br>
                 {% endif %}
             {% endfor %}
             </div>
             <div class='row'>
-                <a class='mx-auto reducefontsize nes-btn is-error text-dark my-2 w-50' href="{{ path('fight_choosing_attack', {'isItSpell': 0, 'attack': -2}) }}">Ultimate</a>
+                <a class='mx-auto reducefontsize nes-btn is-error text-dark my-2 w-50' title='Mana cost : 5, {{player1.personnage.ultimateText}}' href="{{ path('fight_choosing_attack', {'isItSpell': 0, 'attack': 0}) }}">Ultimate</a>
             </div>
     </div>
     <div class='col-6'>
                                 {# Log de combat #}
         <div class="nes-container is-dark with-title text-wrap" style='min-height: 630px;max-height: 630px;'>
             <p class="title">What's happen ?</p>
-            <p class='log-text'>Good morning. Thou hast had a good night's sleep, I hope.</p>
-            <p class='log-text'>Good morning. Thou hast had a good night's sleep, I hope.</p>
-            <p class='log-text'>Good morning. Thou hast had a good night's sleep, I hope.</p>
-            <p class='log-text'>Good morning. Thou hast had a good night's sleep, I hope.</p>
+            {% for fightLog in fightLogs %}
+                <p class='log-text'>{{fightLog}}</p>
+            {% endfor %}
         </div>
     </div>
     <div class='col-3'>
@@ -82,9 +96,34 @@ body {
     </div>
 </div>
 
+{% if winner is not null %}
+<button type="button" id="hiddenWinnerBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#winnerModal">
 
-
-            
+</button>
+<div id='winnerModal' class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header mx-auto">
+        <h5 id="staticBackdropLabel">{{winner.personnage.name}} wins !</h5>
+      </div>
+      <div class="modal-body mx-auto">
+        <img src='{{winner.personnage.image}}' width=300>
+      </div>
+      <div class="modal-footer mx-auto">
+        <a class='nes-btn is-error text-dark' href="{{ path('fight_destroy_game_data')}}">
+            Back to Character Screen
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+window.onload = function() {
+    document.getElementById('hiddenWinnerBtn').click();
+}
+</script>
+{% endif %}
+       
 
 
 {% endblock %}

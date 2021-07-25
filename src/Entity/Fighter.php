@@ -6,6 +6,7 @@ use App\Repository\FighterRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @ORM\Entity(repositoryClass=FighterRepository::class)
@@ -74,6 +75,11 @@ class Fighter
      * @ORM\Column(type="integer")
      */
     private $maxHealthPoint;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $healthPointStartOfTurn;
 
     public function __construct()
     {
@@ -242,18 +248,15 @@ class Fighter
         return $this;
     }
 
-    public function attack(Fighter $target) {
-        // retravailler le calcul de dégât
-        $damage = floor($this->getPower() - ($target->getToughness()) * rand(1, 1.5));
-
-        $damage === 0 ? $damage += 1 : $damage = $damage;
-
-        // dd($damage, $attacker);
-
-        $target->setHealthPoint($target->getHealthPoint() - $damage);
+    public function getHealthPointStartOfTurn(): ?int
+    {
+        return $this->healthPointStartOfTurn;
     }
 
-    public function cast(Spell $spell, Fighter $target) {
-        $spell->execute($target);
+    public function setHealthPointStartOfTurn(int $healthPointStartOfTurn): self
+    {
+        $this->healthPointStartOfTurn = $healthPointStartOfTurn;
+
+        return $this;
     }
 }
