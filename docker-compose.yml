@@ -1,7 +1,16 @@
 version: "3.5"
 services:
+  app:
+    build: ./
+    restart: always
+    container_name: app
+    ports:
+      - '8000:8000'
+    depends_on:
+      - db
   db:
     image: mysql:8
+    container_name: db
     volumes:
       - ./db-data:/var/lib/mysql
     restart: always
